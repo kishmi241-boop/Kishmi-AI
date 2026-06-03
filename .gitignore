@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.env
+venv/
+env/
+.venv/
+merged_yolo_dataset/
+merged_yolo_dataset.zip
+runs/
+.DS_Store
+*.zip
+*.tar.gz
+*.mp4

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KISHMI AURA — AI Skin Analyst by Antigravity</title>
+  
+  <!-- Modern Premium Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Brand Background Accents -->
+  <div class="glow-accent glow-top-left"></div>
+  <div class="glow-accent glow-bottom-right"></div>
+
+  <!-- Main Navigation Header -->
+  <header class="main-header">
+    <div class="header-container">
+      <div class="brand-logo">
+        <span class="brand-name">KISHMI</span>
+        <span class="brand-divider">|</span>
+        <span class="product-badge">AURA <span class="ai-label">AI</span></span>
+      </div>
+      
+      <!-- Climate Widget representing cultural/environmental awareness -->
+      <div class="climate-widget">
+        <div class="climate-pulse"></div>
+        <div class="climate-info">
+          <span class="climate-city" id="activeCity">Mumbai, IN</span>
+          <span class="climate-stats" id="activeWeather">Humid • 32°C • UV Index: Extreme (10)</span>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <button class="cart-btn" id="openCartBtn">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="cart-count" id="cartCountBadge">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Application Body Grid -->
+  <main class="app-container">
+    
+    <!-- LEFT SIDEBAR: Subject Selector & Dataset Loader -->
+    <aside class="sidebar-panel">
+      <div class="panel-header" style="display: none;">
+        <h2><i class="fa-solid fa-users-viewfinder"></i> Facial Skin Database</h2>
+        <p>Select a subject from the clinical skin study dataset to load their front and side-profile scans.</p>
+      </div>
+      
+      <div class="subject-scroller" id="subjectGrid" style="display: none;">
+        <!-- Subjects will be loaded here dynamically by app.js -->
+        <div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading subjects...</div>
+      </div>
+      
+      <div class="custom-upload-box">
+        <div class="upload-dashed-area" id="uploadArea">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <span>Upload Custom Scan</span>
+          <p>JPG or PNG (max 10MB)</p>
+          <input type="file" id="fileInput" accept="image/*" style="display: none;">
+        </div>
+        
+        <div class="camera-btn-area" id="startCameraBtn" style="margin-top: 15px; border: 2px dashed rgba(27, 56, 36, 0.2); border-radius: 14px; padding: 15px; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(255, 255, 255, 0.3); transition: all 0.4s;">
+          <i class="fa-solid fa-video" style="color: var(--brand-forest); font-size: 20px;"></i>
+          <span style="font-size: 13px; font-weight: 600; color: var(--brand-forest-dark);">Start Live Camera Scan</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER PANEL: Scanning Viewport & Telemetry -->
+    <section class="scanner-panel">
+      <div class="panel-header text-center">
+        <span class="section-tag">AURA Adaptive Scan Core</span>
+        <h1>Interactive Facial Scanner</h1>
+      </div>
+
+      <div class="scanner-viewport-wrapper">
+        <div class="scanner-viewport" id="scannerViewport">
+          
+          <!-- Default brand model cover representing healthy skin -->
+          <img src="" alt="Active Profile Scan" class="active-scan-img" id="scanMainImage">
+          
+          <!-- Webcam Video Element -->
+          <video id="webcamVideo" autoplay playsinline style="display: none; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1);"></video>
+          
+          <!-- Stop Camera Button -->
+          <button id="stopCameraBtn" style="display: none; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 50; background: #c6785c; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-family: 'Outfit', sans-serif; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(198, 120, 92, 0.4);">
+            <i class="fa-solid fa-video-slash"></i> Stop Camera
+          </button>
+          
+          <!-- Hidden canvas for capturing frames -->
+          <canvas id="captureCanvas" style="display: none;"></canvas>
+          
+          <!-- Custom SVG Markers Container overlay for detected spots -->
+          <div class="markers-overlay" id="markersOverlay"></div>
+
+          <!-- Laser Scan Line Overlay -->
+          <div class="laser-scanner" id="laserLine">
+            <div class="laser-bar"></div>
+            <div class="grid-overlay"></div>
+          </div>
+          
+          <!-- Scanning Target Crosshairs -->
+          <div class="scan-target upper-left"></div>
+          <div class="scan-target upper-right"></div>
+          <div class="scan-target lower-left"></div>
+          <div class="scan-target lower-right"></div>
+
+          <!-- Telemetry Live HUD Overlay -->
+          <div class="telemetry-hud" id="telemetryHud">
+            <div class="hud-item"><span class="hud-label">FPS:</span> <span class="hud-val">60.0</span></div>
+            <div class="hud-item"><span class="hud-label">RES:</span> <span class="hud-val">1024x1024</span></div>
+            <div class="hud-item"><span class="hud-label">Fitzpatrick:</span> <span class="hud-val" id="hudFitzpatrick">CALIBRATING</span></div>
+            <div class="hud-item"><span class="hud-label">Under-Eye:</span> <span class="hud-val" id="hudUnderEye">READY</span></div>
+          </div>
+
+          <!-- Scanning Complete Overlay Badge -->
+          <div class="scan-complete-badge" id="scanCompleteBadge">
+            <i class="fa-solid fa-circle-check"></i> SCAN COMPILED
+          </div>
+        </div>
+      </div>
+
+      <!-- View Tab Switchers (Front, Left, Right Profile) -->
+      <div class="view-switcher-tabs">
+        <button class="tab-btn active" data-view="front"><i class="fa-solid fa-face-smile"></i> Front View</button>
+        <button class="tab-btn" data-view="left"><i class="fa-solid fa-arrow-left-long"></i> Left Profile</button>
+        <button class="tab-btn" data-view="right"><i class="fa-solid fa-arrow-right-long"></i> Right Profile</button>
+      </div>
+
+      <!-- Control Console Action Area -->
+      <div class="console-controls">
+        <button class="primary-btn btn-glow" id="startScanBtn">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> START AURA AI SCAN
+        </button>
+      </div>
+
+      <!-- Bottom Console Log (Telemetry Ticker) -->
+      <div class="console-log-box">
+        <div class="console-log-header">
+          <span><i class="fa-solid fa-terminal"></i> Live Scan Telemetry Log</span>
+          <span class="pulse-indicator"></span>
+        </div>
+        <div class="console-log-body" id="consoleLogs">
+          <div class="log-entry system">[SYSTEM] AURA AI Skin Core initialized. Waiting for subject selection...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: AURA Expert Skin Analysis Report -->
+    <section class="analysis-panel">
+      <div class="panel-header">
+        <span class="section-tag">Dermatologist Curated</span>
+        <h2><i class="fa-solid fa-chart-line"></i> AURA Skin Story Report</h2>
+      </div>
+
+      <!-- Awaiting Scan Placeholder -->
+      <div class="analysis-placeholder" id="analysisPlaceholder">
+        <div class="placeholder-content">
+          <i class="fa-solid fa-id-card-clip placeholder-icon pulse-glow"></i>
+          <h3>Awaiting Facial Scan</h3>
+          <p>Please select a subject from the study dataset or upload your own photo, then press <strong>START AURA AI SCAN</strong> to run the comprehensive analysis.</p>
+        </div>
+      </div>
+
+      <!-- Dynamic Report Output (Initially Hidden) -->
+      <div class="analysis-results-container hidden" id="analysisResults">
+        
+        <!-- Skin Story Card -->
+        <article class="report-card skin-story-card">
+          <div class="card-title">
+            <span class="emoji">🔍</span>
+            <h3>YOUR SKIN STORY</h3>
+          </div>
+          <div class="card-body" id="reportStory">
+            <!-- Dynamic Story Content -->
+          </div>
+        </article>
+
+        <!-- What We Noticed Card -->
+        <article class="report-card concerns-card">
+          <div class="card-title">
+            <span class="emoji">📋</span>
+            <h3>WHAT WE NOTICED</h3>
+          </div>
+          <div class="card-body">
+            <!-- Badges representing analyzed scores -->
+            <div class="score-badges-row">
+              <span class="score-badge" id="badgeSkinType">Combination</span>
+              <span class="score-badge" id="badgeUndertone">Warm Golden</span>
+              <span class="score-badge" id="badgeFitzpatrick">Fitzpatrick IV</span>
+            </div>
+            <ul class="concerns-list" id="reportNoticed">
+              <!-- Dynamic Bullet Items -->
+            </ul>
+          </div>
+        </article>
+
+        <!-- Kishmi Skincare Ritual Recommendations Card -->
+        <article class="report-card ritual-card">
+          <div class="card-title">
+            <span class="emoji">🌿</span>
+            <h3>YOUR KISHMI RITUAL</h3>
+          </div>
+          
+          <div class="routine-section">
+            <div class="routine-header morning-routine">
+              <i class="fa-solid fa-sun"></i> Morning Ritual
+            </div>
+            <ul class="routine-steps" id="morningSteps">
+              <!-- Dynamic Morning steps -->
+            </ul>
+          </div>
+
+          <div class="routine-section">
+            <div class="routine-header night-routine">
+              <i class="fa-solid fa-moon"></i> Night Ritual
+            </div>
+            <ul class="routine-steps" id="nightSteps">
+              <!-- Dynamic Night steps -->
+            </ul>
+          </div>
+
+          <!-- Add Whole Ritual to Shopping Cart -->
+          <div class="add-ritual-action">
+            <button class="primary-btn outline-btn" id="addRitualToCartBtn">
+              <i class="fa-solid fa-cart-plus"></i> ADD ENTIRE RITUAL TO BAG
+            </button>
+          </div>
+        </article>
+
+        <!-- Environmental & Climate Tips Card -->
+        <article class="report-card climate-tips-card">
+          <div class="card-title">
+            <span class="emoji">💡</span>
+            <h3>SKIN TIPS FOR YOUR CLIMATE</h3>
+          </div>
+          <div class="card-body">
+            <ul class="climate-tips-list" id="reportTips">
+              <!-- Dynamic Tips -->
+            </ul>
+          </div>
+        </article>
+
+        <!-- Clinical Dermatologist Warning Card -->
+        <article class="report-card clinical-warning-card">
+          <div class="card-title">
+            <span class="emoji">⚠️</span>
+            <h3>WHEN TO SEE A DERMATOLOGIST</h3>
+          </div>
+          <div class="card-body" id="reportWarning">
+            <!-- Dynamic Clinical Warning -->
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SHOPPING CART SLIDE OUT DRAWER -->
+  <div class="cart-drawer-overlay" id="cartOverlay">
+    <div class="cart-drawer">
+      <div class="cart-header">
+        <h2><i class="fa-solid fa-bag-shopping"></i> Your Skincare Ritual</h2>
+        <button class="close-cart-btn" id="closeCartBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <div class="cart-items-wrapper" id="cartItemsList">
+        <!-- Dynamic Cart Items loaded here -->
+        <div class="empty-cart-state">
+          <i class="fa-solid fa-seedling"></i>
+          <p>Your skincare routine bag is currently empty. Scan a subject and add products to start your ritual journey.</p>
+        </div>
+      </div>
+      
+      <div class="cart-summary">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span class="total-price" id="cartSubtotal">₹0.00</span>
+        </div>
+        <div class="summary-row promo">
+          <span>Brand Discount (First Order)</span>
+          <span class="discount-price">-₹150.00</span>
+        </div>
+        <div class="summary-row final-total">
+          <span>Estimated Total</span>
+          <span class="total-price" id="cartTotal">₹0.00</span>
+        </div>
+        <button class="primary-btn btn-block" id="checkoutBtn">
+          COMPLETE KISHMI RITUAL PURCHASE
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GLOBAL NOTIFICATION TOAST -->
+  <div class="toast-notification" id="toastNotification">
+    <i class="fa-solid fa-circle-check"></i> <span id="toastMessage">Product added to ritual!</span>
+  </div>
+
+  <!-- LOAD THE GENERATED SKIN DATABASE AND MAIN SCRIPT -->
+  <script src="skin_database.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

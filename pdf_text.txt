@@ -1,0 +1,42 @@
+--- PAGE 1 ---
+A c t u a l  B o t t l e  f o r  b a b y  P r o d u c t s
+heigh t   = 1 0 CM
+width = 18CM
+
+--- PAGE 2 ---
+f o r  l i p  B a l m  C o l o r s   a n d  v e c t o r s
+n e e d s  t o  b e  l i k e  t h i s  
+A c t u a l  J a r  f o r  L i p  B a l m
+heigh t   = 1 .5CM
+width = 13 CM
+
+--- PAGE 3 ---
+t h i s  o n e  i s  o k e y  b u t  d e s i g n   c o n c e p t  s h o u l d  b e  s i m i l e r
+
+--- PAGE 4 ---
+heigh t   = 4 .5CM
+width = 1 0CM
+A c t u a l  J a r  f o r  S e r u m
+
+--- PAGE 5 ---
+s a p c e  b e t w e e n  t h e s e  l i n e s
+A c t u a l  B o t t l e
+heigh t   = 6 .5CM
+width = 1 0 .5CM
+
+--- PAGE 6 ---
+d e s i g n  r e f r e n c e  
+heigh t   = 8 CM
+width = 1 0 CM
+A c t u a l  B o t t l e
+
+--- PAGE 7 ---
+Actual Bottle
+heigh t   = 6 CM
+width = 13 .5 CM
+
+--- PAGE 8 ---
+Actual Bottle
+heigh t   = 9 CM
+width = 12.5 CM
+

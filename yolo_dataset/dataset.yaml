@@ -1,0 +1,13 @@
+path: d:\Kishmi\yolo_dataset
+train: images/train
+val: images/valid
+test: images/test
+
+names:
+  0: acne
+  1: dark_circle
+  2: oily_skin
+  3: dry_skin
+  4: redness
+  5: pores
+  6: spots_eyebags
