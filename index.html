@@ -73,8 +73,8 @@
         </div>
         
         <div class="camera-btn-area" id="startCameraBtn" style="margin-top: 15px; border: 2px dashed rgba(27, 56, 36, 0.2); border-radius: 14px; padding: 15px; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(255, 255, 255, 0.3); transition: all 0.4s;">
-          <i class="fa-solid fa-video" style="color: var(--brand-forest); font-size: 20px;"></i>
-          <span style="font-size: 13px; font-weight: 600; color: var(--brand-forest-dark);">Start Live Camera Scan</span>
+          <i class="fa-solid fa-camera" style="color: var(--brand-forest); font-size: 20px;"></i>
+          <span style="font-size: 13px; font-weight: 600; color: var(--brand-forest-dark);">Take Photo with Camera</span>
         </div>
       </div>
     </aside>
@@ -95,10 +95,15 @@
           <!-- Webcam Video Element -->
           <video id="webcamVideo" autoplay playsinline style="display: none; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1);"></video>
           
-          <!-- Stop Camera Button -->
-          <button id="stopCameraBtn" style="display: none; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 50; background: #c6785c; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-family: 'Outfit', sans-serif; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(198, 120, 92, 0.4);">
-            <i class="fa-solid fa-video-slash"></i> Stop Camera
-          </button>
+          <!-- Camera Controls -->
+          <div id="cameraControls" style="display: none; position: absolute; bottom: 20px; left: 0; width: 100%; display: none; justify-content: center; gap: 15px; z-index: 50;">
+            <button id="capturePhotoBtn" style="background: var(--brand-forest); color: white; border: none; padding: 12px 24px; border-radius: 30px; font-family: 'Outfit', sans-serif; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(27, 56, 36, 0.4); display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-camera-retro"></i> Capture Photo
+            </button>
+            <button id="stopCameraBtn" style="background: #c6785c; color: white; border: none; padding: 12px 24px; border-radius: 30px; font-family: 'Outfit', sans-serif; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(198, 120, 92, 0.4); display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-xmark"></i> Cancel
+            </button>
+          </div>
           
           <!-- Hidden canvas for capturing frames -->
           <canvas id="captureCanvas" style="display: none;"></canvas>

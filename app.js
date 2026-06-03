@@ -619,11 +619,12 @@ function handleCustomImageUpload(e) {
 // ----------------------------------------------------
 const startCameraBtn = document.getElementById('startCameraBtn');
 const stopCameraBtn = document.getElementById('stopCameraBtn');
+const capturePhotoBtn = document.getElementById('capturePhotoBtn');
+const cameraControls = document.getElementById('cameraControls');
 const webcamVideo = document.getElementById('webcamVideo');
 const captureCanvas = document.getElementById('captureCanvas');
 
 let webcamStream = null;
-let arScanInterval = null;
 
 if (startCameraBtn) {
   startCameraBtn.addEventListener('click', async () => {
@@ -634,20 +635,19 @@ if (startCameraBtn) {
       // UI toggles
       scanMainImage.style.display = 'none';
       webcamVideo.style.display = 'block';
-      stopCameraBtn.style.display = 'block';
+      cameraControls.style.display = 'flex';
       startCameraBtn.style.pointerEvents = 'none';
       startCameraBtn.style.opacity = '0.5';
       
-      logEntry('[SYSTEM] Camera initialized. Starting Live AR mode.', 'system');
-      showToast("Live AR Scanning Active!");
+      logEntry('[SYSTEM] Camera initialized. Ready to capture.', 'system');
+      showToast("Camera Active. Take a photo!");
       
       // Clear old markers and results
       markersOverlay.innerHTML = '';
       document.querySelector('.analysis-placeholder').classList.add('hidden');
       document.getElementById('analysisResults').classList.remove('hidden');
       
-      // Start continuous AR scanning loop
-      startARLoop();
+      // Setup complete. Wait for user to click capture.
     } catch (err) {
       console.error(err);
       logEntry('[ERROR] Could not access webcam. Check permissions.', 'error');
@@ -661,70 +661,86 @@ if (stopCameraBtn) {
     if (webcamStream) {
       webcamStream.getTracks().forEach(track => track.stop());
     }
-    clearInterval(arScanInterval);
     
     scanMainImage.style.display = 'block';
     webcamVideo.style.display = 'none';
-    stopCameraBtn.style.display = 'none';
+    cameraControls.style.display = 'none';
     startCameraBtn.style.pointerEvents = 'auto';
     startCameraBtn.style.opacity = '1';
     
     markersOverlay.innerHTML = '';
-    logEntry('[SYSTEM] Live AR mode stopped.', 'system');
+    logEntry('[SYSTEM] Camera closed.', 'system');
   });
 }
 
-function startARLoop() {
-  // Capture a frame every 1.5 seconds and send to AI
-  arScanInterval = setInterval(async () => {
-    if (!webcamVideo.videoWidth) return; // Wait until video is playing
-    
-    captureCanvas.width = webcamVideo.videoWidth;
-    captureCanvas.height = webcamVideo.videoHeight;
-    const ctx = captureCanvas.getContext('2d');
-    
-    // Draw current video frame to canvas
-    // Flip horizontally because webcam feed is usually mirrored
-    ctx.translate(captureCanvas.width, 0);
-    ctx.scale(-1, 1);
-    ctx.drawImage(webcamVideo, 0, 0, captureCanvas.width, captureCanvas.height);
-    
-    const base64Data = captureCanvas.toDataURL('image/jpeg', 0.8);
-    
-    try {
-        const response = await fetch(API_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image: base64Data })
-        });
+if (capturePhotoBtn) {
+    capturePhotoBtn.addEventListener('click', async () => {
+        if (!webcamVideo.videoWidth) return;
         
-        const data = await response.json();
-        if (data.error) throw new Error(data.error);
+        // Capture frame
+        captureCanvas.width = webcamVideo.videoWidth;
+        captureCanvas.height = webcamVideo.videoHeight;
+        const ctx = captureCanvas.getContext('2d');
         
-        // Live Update the Sidebar UI
-        appState.scanCompiled = true;
-        const customSubject = {
-            id: 999,
-            skinType: "Live Camera Stream",
-            undertone: "Live Auto",
-            fitzpatrick: "Live Auto",
-            story: data.story,
-            noticed: data.noticed,
-            ritual: data.ritual,
-            tips: data.tips,
-            dermWarning: data.dermWarning,
-            markers: { front: data.markers, left: data.markers, right: data.markers }
-        };
-        appState.currentSubject = customSubject;
+        ctx.translate(captureCanvas.width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(webcamVideo, 0, 0, captureCanvas.width, captureCanvas.height);
         
-        // Draw markers on live video!
-        drawLiveMarkers(data.markers);
-        renderAnalysisResults();
+        const base64Data = captureCanvas.toDataURL('image/jpeg', 0.9);
         
-    } catch (err) {
-        console.error("Live AR Scan error:", err);
-    }
-  }, 1500);
+        // Display on main image
+        scanMainImage.src = base64Data;
+        scanMainImage.style.transform = 'scaleX(-1)';
+        scanMainImage.style.display = 'block';
+        
+        // Stop Camera
+        if (webcamStream) {
+            webcamStream.getTracks().forEach(track => track.stop());
+        }
+        webcamVideo.style.display = 'none';
+        cameraControls.style.display = 'none';
+        startCameraBtn.style.pointerEvents = 'auto';
+        startCameraBtn.style.opacity = '1';
+        
+        logEntry('[SYSTEM] Photo captured. Analyzing...', 'system');
+        showToast("Analyzing photo...");
+        
+        try {
+            const response = await fetch(API_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: base64Data })
+            });
+            
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+            
+            appState.scanCompiled = true;
+            const customSubject = {
+                id: 999,
+                skinType: "Captured Photo",
+                undertone: "Auto Detected",
+                fitzpatrick: "Auto Detected",
+                story: data.story,
+                noticed: data.noticed,
+                ritual: data.ritual,
+                tips: data.tips,
+                dermWarning: data.dermWarning,
+                markers: { front: data.markers, left: data.markers, right: data.markers }
+            };
+            
+            appState.currentSubject = customSubject;
+            loadSubject(customSubject);
+            
+            logEntry('[SUCCESS] Analysis complete.', 'success');
+            showToast("Analysis complete!");
+            
+        } catch (err) {
+            console.error("Capture Scan error:", err);
+            logEntry(`[ERROR] ${err.message}`, 'error');
+            showToast("Analysis failed!");
+        }
+    });
 }
 
 function drawLiveMarkers(markers) {
