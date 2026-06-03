@@ -555,7 +555,7 @@ function showToast(message) {
 // ----------------------------------------------------
 // CUSTOM IMAGE FILE UPLOADER
 // ----------------------------------------------------
-const API_ENDPOINT = `http://${window.location.hostname}:5000/analyze`; // local Flask server
+const API_ENDPOINT = "/analyze"; // Relative path for monolithic hosting
 
 function handleCustomImageUpload(e) {
   const file = e.target.files[0];

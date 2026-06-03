@@ -13,8 +13,13 @@ import base64
 import glob
 import os
 
-app = Flask(__name__)
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+app = Flask(__name__, static_folder=ROOT_DIR, static_url_path='')
 CORS(app)  # Allow all cross-origin requests from the web app
+
+@app.route('/')
+def serve_index():
+    return app.send_static_file('index.html')
 
 # ─── PRODUCT RECOMMENDATION ENGINE ─────────────────────────────────────────────
 # Kishmi product catalog mapped to detected skin conditions & severity
