@@ -718,9 +718,10 @@ if (capturePhotoBtn) {
             appState.scanCompiled = true;
             const customSubject = {
                 id: 999,
-                skinType: "Captured Photo",
+                skinType: "Uploaded Photo",
                 undertone: "Auto Detected",
                 fitzpatrick: "Auto Detected",
+                frontImage: scanMainImage.src,
                 story: data.story,
                 noticed: data.noticed,
                 ritual: data.ritual,
