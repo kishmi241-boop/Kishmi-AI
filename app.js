@@ -555,7 +555,7 @@ function showToast(message) {
 // ----------------------------------------------------
 // CUSTOM IMAGE FILE UPLOADER
 // ----------------------------------------------------
-const API_ENDPOINT = "/analyze"; // Relative path for monolithic hosting
+const API_ENDPOINT = window.location.protocol === 'file:' ? 'http://127.0.0.1:5000/analyze' : '/analyze';
 
 function handleCustomImageUpload(e) {
   const file = e.target.files[0];
